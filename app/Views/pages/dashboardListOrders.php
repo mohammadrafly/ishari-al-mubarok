@@ -47,8 +47,8 @@
                                   <label for="exampleFormControlSelect1">Status</label>
                                   <select class="form-control" id="status" name="status">
                                     <option value="pending">Pending</option>
-                                    <option value="on_progres">Ditolak</option>
-                                    <option value="done">Disetujui</option>
+                                    <option value="on_progres">Disetujui</option>
+                                    <option value="done">Selesai</option>
                                   </select>
                                 </div>
                                 <div class="mt-3">
@@ -98,11 +98,11 @@
                       </td>
                         <?php if ($data['status'] == 'done'): ?>
                             <td class="align-middle text-center"> 
-                            <span class="badge bg-gradient-success">Disetujui</span>
+                            <span class="badge bg-gradient-success">Selesai</span>
                             </td>
                         <?php elseif ($data['status'] == 'on_progres'): ?>
                             <td class="align-middle text-center"> 
-                                <span class="badge bg-gradient-danger">Ditolak</span>
+                                <span class="badge bg-gradient-danger">Disetujui</span>
                             </td>
                         <?php else: ?>
                             <td class="align-middle text-center"> 
