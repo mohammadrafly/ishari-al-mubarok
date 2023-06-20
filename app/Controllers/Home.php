@@ -75,7 +75,7 @@ class Home extends BaseController
                 'detail_lokasi' => $longitude,
                 'harga' => $this->request->getVar('harga'),
                 'no_hp' => $this->request->getVar('no_hp'),
-                'status' => 'dalam_pemeriksaan',
+                'status' => 'pending',
                 'username' => $email,
             ];
     
@@ -110,7 +110,8 @@ class Home extends BaseController
 
     public function bayar()
     {
-        $id = $this->request->getPost('id');
+        $id = $this->request->getVar('id');
+        $user_id = $this->request->getVar('user_id');
     
         if ($this->request->getFile('fileInput')->isValid()) {
             $file = $this->request->getFile('fileInput');
@@ -125,10 +126,55 @@ class Home extends BaseController
                     'message' => 'File uploaded successfully.'
                 ];
                 $model = new Orders();
-                $model->update($id, [
+                $userModel = new Users();
+                $order = $model->find($id);
+                $user = $userModel->find($user_id);
+                if ($model->update($id, [
                     'foto_pembayaran' => $filename,
                     'status' => 'on_progres'
-                ]);
+                ])) {
+                    $data['get'] = [
+                        'username'  => $order['username'],
+                        'nama'      => $user['nama'],
+                        'nomor_hp'  => $user['nomor_hp'],
+                        'alamat'    => $user['alamat'],
+                        'email'     => $user['email'],
+                        'harga'     => $order['harga'],
+                        'status'    => $this->request->getPost('status'),
+                        'update'    => $order['updated_at'],
+                        'kode_pembayaran'=> $order['kode_pembayaran'],
+                        'date'      => date('Y-m-d H:i:s')
+                    ];
+                    $to = $user['email'];
+                    $subject = 'Notifikasi Order';
+                    $message = view('email/dashboardNotifikasi.php', $data);
+                        
+                    $email = \Config\Services::email();
+                
+                    $email->setMailType('html');
+                    $email->setTo($to);
+                    $email->setFrom('isharialmubarok@gmail.com', 'ISHARI AL MUBAROK');
+                    $email->setSubject($subject);
+                    $email->setMessage($message);
+                    $email->setNewLine("\r\n");
+                
+                    if ($email->send("X-Priority: 1 (Highest)\n")) {
+                        return $this->response->setJSON([
+                            'status' => true,
+                            'icon' => 'success',
+                            'title' => 'Pembayaran Berhasil!',
+                            'text' => 'Silahkan Check Email Anda.',
+                        ]);
+                    } else {
+                        $data = $email->printDebugger(['headers']);
+                        return $this->response->setJSON([
+                            'status' => false,
+                            'icon' => 'error',
+                            'title' => 'Permintaan Gagal!',
+                            'text' => $data,
+                        ]); 
+                    }
+                }
             } else {
                 $response = [
                     'status' => 'error',

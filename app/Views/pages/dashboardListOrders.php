@@ -49,6 +49,7 @@
                                     <option value="pending">Pending</option>
                                     <option value="on_progres">Disetujui</option>
                                     <option value="done">Selesai</option>
+                                    <option value="ditolak">Ditolak</option>
                                   </select>
                                 </div>
                                 <div class="mt-3">
@@ -66,6 +67,41 @@
             </div>
             <div class="card-body px-0 pt-0">
               <div class="table-responsive px-4 py-4">
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <label for="month">Pilih Bulan:</label>
+                    <select id="month" class="form-select">
+                      <option value="">Semua</option>
+                      <option value="01">Januari</option>
+                      <option value="02">Februari</option>
+                      <option value="03">Maret</option>
+                      <option value="04">April</option>
+                      <option value="05">Mei</option>
+                      <option value="06">Juni</option>
+                      <option value="07">Juli</option>
+                      <option value="08">Agustus</option>
+                      <option value="09">September</option>
+                      <option value="10">Oktober</option>
+                      <option value="11">November</option>
+                      <option value="12">Desember</option>
+                      <!-- Add more options for other months -->
+                    </select>
+                  </div>
+                  <div class="col-md-6">
+                    <label for="year">Pilih Tahun</label>
+                    <select id="year" class="form-select">
+                      <option value="">All</option>
+                      <?php
+                        $currentYear = date("Y");
+                        $futureYear = 2030;
+
+                        for ($year = $currentYear; $year <= $futureYear; $year++) {
+                          echo '<option value="' . $year . '">' . $year . '</option>';
+                        }
+                      ?>
+                    </select>
+                  </div>
+                </div>
                 <table class="table align-items-center mb-0" id="orderTable">
                   <thead>
                     <tr>
@@ -104,9 +140,13 @@
                             <td class="align-middle text-center"> 
                                 <span class="badge bg-gradient-danger">Disetujui</span>
                             </td>
-                        <?php else: ?>
+                        <?php elseif ($data['status'] == 'pending'): ?>
                             <td class="align-middle text-center"> 
-                                <span class="badge bg-gradient-warning">PENDING</span>
+                                <span class="badge bg-gradient-warning">Pending</span>
+                            </td>
+                        <?php elseif ($data['status'] == 'ditolak' ): ?>
+                            <td class="align-middle text-center"> 
+                                <span class="badge bg-gradient-danger">Ditolak</span>
                             </td>
                         <?php endif ?>
                       <td class="align-middle text-center"> 
@@ -177,6 +217,30 @@
 <script src="<?= base_url('js/UpdateOrder.js') ?>"></script>
 <script>
 const base_url = 'http://localhost:8080/'
+$(document).ready(function() {
+    // Function to filter the table based on selected month and year
+    function filterTable() {
+      var selectedMonth = $('#month').val();
+      var selectedYear = $('#year').val();
+
+      $('#orderTable tbody tr').hide();
+
+      // Show rows matching the selected month and year
+      $('#orderTable tbody tr').each(function() {
+        var rowMonth = $(this).find('td:nth-child(3)').text().trim().split('-')[1];
+        var rowYear = $(this).find('td:nth-child(3)').text().trim().split('-')[0];
+
+        if ((selectedMonth === '' || selectedMonth === rowMonth) && (selectedYear === '' || selectedYear === rowYear)) {
+          $(this).show();
+        }
+      });
+    }
+
+    // Call filterTable function when the month or year selection changes
+    $('#month, #year').change(function() {
+      filterTable();
+    });
+  });
 $(document).ready(function() {
   $('#orderTable').DataTable();
 });

@@ -398,7 +398,7 @@ class Dashboard extends BaseController
                     'harga'     => $order['harga'],
                     'status'    => $this->request->getPost('status'),
                     'update'    => $order['updated_at'],
-                    'id'        => $order['id'],
+                    'kode_pembayaran'=> $order['kode_pembayaran'],
                     'date'      => date('Y-m-d H:i:s')
                 ];
                 $to = $user['email'];

@@ -59,7 +59,7 @@ class Orders extends Migration
                 'null' => true
             ],
             'status' => [
-                'type' => 'ENUM("pending","on_progres","done", "dalam_pemeriksaan")',
+                'type' => 'ENUM("pending","on_progres","done", "ditolak")',
                 'default' => 'pending',
                 'null' => false,
             ],

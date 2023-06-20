@@ -143,10 +143,10 @@
                 <td><?= $dd->waktu_event ?></td>
                 <td><?= number_to_currency($dd->harga , 'IDR')?></td>
                 <td>
-                  <?php if($dd->status == 'dalam_pemeriksaan'): ?>
+                  <?php if($dd->status == 'pending'): ?>
                     Menunggu Pembayaran
-                  <?php elseif($dd->status == 'pending'): ?>
-                    Pending
+                  <?php elseif($dd->status == 'ditolak'): ?>
+                    Ditolak
                   <?php elseif($dd->status == 'done'): ?>
                     Selesai
                   <?php elseif($dd->status == 'on_progres'): ?>
@@ -155,7 +155,7 @@
                 </td>
                 <td>
                   <?php if ($dd->foto_pembayaran === null): ?>
-                    <?php if ($dd->status === 'dalam_pemeriksaan'): ?>
+                    <?php if ($dd->status === 'pending'): ?>
                       <button class="button-send scrollto" type="button" onclick="bayar(<?= $dd->id_order ?>)">
                         Bayar
                       </button>
@@ -163,6 +163,8 @@
                   <?php else: ?>
                     <?php if ($dd->status === 'on_progres'): ?>
                       <a href="<?= 'https://wa.me/'.$admin['nomor_hp'].'?text=Halo min!,%20saya%20ingin%20menanyakan%20booking%20dengan%20KODE:%20'.$dd->kode_pembayaran ?>" class="btn btn-primary">Chat Admin</a>
+                    <?php elseif ($dd->status === 'ditolak'): ?>
+                      <a href="<?= 'https://wa.me/'.$admin['nomor_hp'].'?text=Cek penolakan%20booking%20dengan%20KODE:%20'.$dd->kode_pembayaran ?>" class="btn btn-primary">Chat Admin</a>
                     <?php elseif ($dd->status === 'done'): ?>
                       Booking telah selesai
                     <?php endif ?>
@@ -189,13 +191,17 @@
                         
                         <!-- Upload file form -->
                         <input type="text" hidden id="id" name="id">
+                        <input type="text" hidden id="user_id" name="user_id" value="<?= session()->get('id') ?>">
                         <div class="form-group">
                           <label for="fileInput">Bukti Pembayaran:</label>
                           <input type="file" class="form-control-file" id="fileInput" name="fileInput">
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" onclick="doBayar()" class="btn btn-primary">Kirim</button>
+                        <button type="button" onclick="doBayar()" class="btn btn-primary" id="kirimButton">
+                          <span id="buttonText">Kirim</span>
+                          <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"></span>
+                        </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                       </div>
                     </form>
@@ -321,30 +327,98 @@ function bayar(id) {
 }
 
 function doBayar() {
-  var form = $('#form-upload');
-  var fileInput = $('#fileInput');
+  var button = document.getElementById("kirimButton");
+  var buttonText = document.getElementById("buttonText");
+  var loadingSpinner = document.getElementById("loadingSpinner");
 
-  var file = fileInput[0].files[0];
+  // Disable the button and show loading animation
+  button.disabled = true;
+  buttonText.style.display = "none";
+  loadingSpinner.style.display = "inline-block";
 
-  var formData = new FormData();
-  formData.append('fileInput', file);
-  formData.append('id', $('#id').val());
-
-  $.ajax({
-    url: `${base_url}pesanan/bayar`,
-    type: 'POST',
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function(response) {
-      alert(response.message);
-      location.reload()
-    },
-    error: function(xhr, status, error) {
-      alert('Error uploading file.');
-    }
+  // Create a promise for simulating an asynchronous operation
+  var simulateAsyncOperation = new Promise(function(resolve, reject) {
+    // Simulate an asynchronous operation (replace with your actual code)
+    setTimeout(function() {
+      // Resolve the promise to indicate the completion of the operation
+      resolve();
+    }, 3000); // Example: Simulating a 3-second operation
   });
-  $('#myModal').modal('hide');
+
+  simulateAsyncOperation.then(function() {
+    // Re-enable the button and hide loading animation
+    button.disabled = false;
+    buttonText.style.display = "inline-block";
+    loadingSpinner.style.display = "none";
+
+    // Perform the AJAX request
+    var form = $('#form-upload');
+    var fileInput = $('#fileInput');
+
+    var file = fileInput[0].files[0];
+
+    var formData = new FormData();
+    formData.append('fileInput', file);
+    formData.append('id', $('#id').val());
+    formData.append('user_id', $('#user_id').val());
+
+    $.ajax({
+      url: `${base_url}pesanan/bayar`,
+      type: 'POST',
+      data: formData,
+      contentType: false,
+      processData: false,
+      beforeSend: function() {
+        // Show loading animation before sending the AJAX request
+        Swal.fire({
+          title: 'Loading...',
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading();
+            const b = Swal.getHtmlContainer().querySelector('b');
+            timerInterval = setInterval(() => {
+              b.textContent = Swal.getTimerLeft();
+            }, 100);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          }
+        });
+      },
+      success: function(response) {
+        // Handle the AJAX response
+        Swal.fire({
+          icon: response.icon,
+          title: response.title,
+          text: response.text,
+          timer: 5000,
+          timerProgressBar: true,
+          didOpen: () => {
+            Swal.showLoading();
+            const b = Swal.getHtmlContainer().querySelector('b');
+            timerInterval = setInterval(() => {
+              b.textContent = Swal.getTimerLeft();
+            }, 100);
+          },
+          willClose: () => {
+            clearInterval(timerInterval);
+          }
+        }).then((result) => {
+          location.reload();
+        });
+      },
+      error: function(response, xhr, status, error) {
+        // Handle the AJAX error response
+        swal.fire({
+          icon: response.icon,
+          title: response.title,
+          text: response.text,
+        }).then(location.reload());
+      }
+    });
+
+    $('#myModal').modal('hide');
+  });
 }
 
 // Get the select element

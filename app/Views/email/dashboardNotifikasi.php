@@ -16,13 +16,13 @@
         <td colspan="2" style="border: solid 1px #ddd; padding:10px 20px;">
           <?php if ($get['status'] == 'done'): ?>
             <p style="font-size:14px;margin:0 0 6px 0;"><span style="font-weight:bold;display:inline-block;min-width:150px">Order status</span><b style="color:green;font-weight:normal;margin:0">DISETUJUI</b></p>
-          <?php elseif ($get['status'] == 'done'): ?>
+          <?php elseif ($get['status'] == 'ditolak'): ?>
             <p style="font-size:14px;margin:0 0 6px 0;"><span style="font-weight:bold;display:inline-block;min-width:150px">Order status</span><b style="color:red;font-weight:normal;margin:0">DITOLAK</b></p>
-          <?php else: ?>
+          <?php elseif ($get['status'] == 'pending'): ?>
             <p style="font-size:14px;margin:0 0 6px 0;"><span style="font-weight:bold;display:inline-block;min-width:150px">Order status</span><b style="color:orange;font-weight:normal;margin:0">PENDING</b></p>
           <?php endif ?>
-          <p style="font-size:14px;margin:0 0 6px 0;"><span style="font-weight:bold;display:inline-block;min-width:146px">Transaction ID</span> <?php echo $get['id']; ?></p>
-          <p style="font-size:14px;margin:0 0 0 0;"><span style="font-weight:bold;display:inline-block;min-width:146px">Order amount</span> <?php echo number_to_currency($get['harga'], 'IDR'); ?></p>
+          <p style="font-size:14px;margin:0 0 6px 0;"><span style="font-weight:bold;display:inline-block;min-width:146px">Transaction ID</span> <?php echo $get['kode_pembayaran']; ?></p>
+          <p style="font-size:14px;margin:0 0 0 0;"><span style="font-weight:bold;display:inline-block;min-width:146px">Order amount</span> <?= $get['harga']; ?></p>
         </td>
       </tr>
       <tr>
