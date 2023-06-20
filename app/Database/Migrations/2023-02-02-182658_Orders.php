@@ -53,8 +53,12 @@ class Orders extends Migration
                 'type' => 'VARCHAR',
                 'constraint' => '100',
             ],
+            'foto_pembayaran' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
+            ],
             'status' => [
-                'type' => 'ENUM("pending","on_progres","done")',
+                'type' => 'ENUM("pending","on_progres","done", "dalam_pemeriksaan")',
                 'default' => 'pending',
                 'null' => false,
             ],
