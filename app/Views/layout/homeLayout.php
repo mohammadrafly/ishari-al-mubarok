@@ -25,6 +25,12 @@
 
   <!-- Template Main CSS File -->
   <link href="<?= base_url('assets/css/style.css') ?>" rel="stylesheet">
+  <style>
+    .selected {
+      background-color: #008000; /* Replace with your desired color */
+      color: #FFFFFF; /* Replace with your desired text color */
+    }
+  </style>
 </head>
 
 <body>

@@ -1,7 +1,7 @@
 function Order() {
     var username = $("#username").val();
     var tanggal_event = $("#tanggal_event").val();
-    var waktu_event = $("#waktu_event").val();
+    var waktu_event = $("input[name='waktu_event']").val();
     var kategori_event = $("#kategori_event").val();
     var harga = $("#harga").val();
     var no_hp = $('#no_hp').val();

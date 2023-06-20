@@ -33,6 +33,7 @@ $routes->set404Override();
 $routes->get('/', 'Home::index');
 $routes->get('profile/(:any)', 'Dashboard::profile/$1');
 $routes->get('pesanan/(:any)', 'Dashboard::clientPesanan/$1');
+$routes->get('avail/(:any)', 'Dashboard::checkAvailability/$1');
 $routes->post('pesanan/bayar', 'Home::bayar');
 //Auth
 $routes->match(['GET', 'POST'], 'signup', 'Auth::SignUp');

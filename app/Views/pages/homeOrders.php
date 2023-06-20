@@ -11,7 +11,6 @@
         <div class="section-title">
           <span>Booking Pentas</span>
           <h2>Booking Pentas</h2>
-          <p>Sit sint consectetur velit quisquam cupiditate impedit suscipit alias</p>
         </div>
         <form id="orders" role="form">
         <div class="row">
@@ -21,11 +20,61 @@
               <div class="form-group col-md-12">
                 <label for="name">Tanggal Acara</label>
                 <input class="form-control" id="username" name="username" type="text" value="<?= session()->get('username') ?>" hidden>
-                <input class="form-control" id="tanggal_event" name="tanggal_event" type="date" required>
+                <input class="form-control" id="tanggal_event" name="tanggal_event" type="date" required onchange="checkAvailability()">
               </div>
-              <div class="form-group col-md-12">
-                <label for="name">Waktu Acara</label>
-                <input class="form-control" id="waktu_event" name="waktu_event" type="time" required>
+              <div class="form-group">
+                <label for="waktu_event">Waktu Event</label>
+                <div class="row" id="waktu_event_options">
+                  <input type="hidden" id="selected_waktu_event" name="waktu_event">
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="06:00">06:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="07:00">07:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="08:00">08:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="09:00">09:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="10:00">10:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="11:00">11:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="12:00">12:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="13:00">13:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="14:00">14:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="15:00">15:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="16:00">16:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="17:00">17:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="18:00">18:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="19:00">19:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="20:00">20:00</button>
+                  </div>
+                  <div class="col mt-1">
+                    <button type="button" class="btn btn-primary waktu-event-btn" data-value="21:00">21:00</button>
+                  </div>
+                </div>
               </div>
               <div class="form-group col-md-12">
                 <label for="name">Nomer Handphone</label>
@@ -171,6 +220,70 @@
 <script src="<?= base_url('js/AddOrder.js') ?>"></script>
 <script>
 const base_url = 'http://localhost:8080/';
+
+// JavaScript code
+var waktuEventButtons = document.querySelectorAll('.waktu-event-btn');
+var selectedWaktuEventInput = document.getElementById('selected_waktu_event');
+
+waktuEventButtons.forEach(function(button) {
+  button.addEventListener('click', function() {
+    var selectedValue = button.getAttribute('data-value');
+    selectedWaktuEventInput.value = selectedValue;
+    updateSelectedButtonColor();
+  });
+});
+
+function updateSelectedButtonColor() {
+  waktuEventButtons.forEach(function(button) {
+    if (button.getAttribute('data-value') === selectedWaktuEventInput.value) {
+      button.classList.add('selected');
+    } else {
+      button.classList.remove('selected');
+    }
+  });
+}
+
+
+function checkAvailability() {
+  var tanggal = document.getElementById('tanggal_event').value;
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', `${base_url}avail/${tanggal}`, true);
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      var response = JSON.parse(xhr.responseText);
+      var availableWaktuEvent = response.map(function(item) {
+        return item.waktu_event;
+      });
+      var waktuEventButtons = document.querySelectorAll('.waktu-event-btn');
+
+      waktuEventButtons.forEach(function(button) {
+        var value = button.dataset.value;
+
+        if (!availableWaktuEvent.includes(value)) {
+          button.disabled = false;
+          button.classList.remove('btn-secondary');
+          button.classList.add('btn-primary');
+        } else {
+          button.disabled = true;
+          button.classList.remove('btn-primary');
+          button.classList.add('btn-secondary');
+        }
+
+        button.addEventListener('click', function() {
+          var selectedWaktuEvent = document.getElementById('selected_waktu_event');
+          selectedWaktuEvent.value = button.dataset.value;
+
+          waktuEventButtons.forEach(function(btn) {
+            btn.classList.remove('selected');
+          });
+
+          button.classList.add('selected');
+        });
+      });
+    }
+  };
+  xhr.send();
+}
 
 function alertPopUp() {
   alert('Maaf saat ini orderan anda sedang dalam pemeriksaan, tunggun 1x24 jam')

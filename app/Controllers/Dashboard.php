@@ -16,6 +16,12 @@ class Dashboard extends BaseController
         $this->db = \Config\Database::connect();
     }
 
+    public function checkAvailability($date) 
+    {
+        $model = new Orders();
+        return $this->response->setJSON($model->select('waktu_event')->where('tanggal_event', $date)->findAll());
+    }
+
     //Profile
     public function profile($email) 
     {
