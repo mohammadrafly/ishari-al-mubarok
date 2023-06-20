@@ -46,7 +46,7 @@ class Home extends BaseController
             $time = $this->request->getVar('waktu_event');
             $latitude = $this->request->getPost('latitude');
             $longitude = $this->request->getPost('longitude');
-            $interval = 30; // Interval in minutes
+            $interval = 60; // Interval in minutes
     
             // Convert time to minutes for easier comparison
             $selectedTime = intval(substr($time, 0, 2)) * 60 + intval(substr($time, 3, 2));
