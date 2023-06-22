@@ -70,7 +70,7 @@ class Orders extends Model
     function checkpointDone($username)
     {
         $query = $this->db->table('orders')
-            ->where('status !=', 'done')
+            ->whereNotIn('status', ['done', 'ditolak'])
             ->where('username', $username)
             ->get();
             if(count($query->getResultArray())==1) {
