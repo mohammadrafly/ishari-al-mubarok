@@ -8,7 +8,6 @@ function signOut() {
         cancelButtonColor: '#d33',
         confirmButtonText: 'Yes, I Want to Sign Out!'
     }).then(function (result) {
-        var base_url = 'http://localhost:8080/';
         if (result.value) {
             $.ajax({
                 url: base_url + 'signout',

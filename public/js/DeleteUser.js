@@ -9,7 +9,6 @@ function deleteUser(id) {
         confirmButtonText: 'Ya, Hapus!'
     }).then(function (result) {
         if (result.value) {
-            var base_url = 'http://localhost:8080/';
             $.ajax({
                 url: base_url+'dashboard/list/users/delete/'+id,
                 type: 'GET',

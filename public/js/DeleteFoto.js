@@ -9,7 +9,6 @@ function deleteFoto(id) {
         confirmButtonText: 'Ya, Hapus!'
     }).then(function (result) {
         if (result.value) {
-            var base_url = 'http://localhost:8080/';
             $.ajax({
                 url: base_url+'dashboard/list/galleries/delete/'+id,
                 type: 'GET',

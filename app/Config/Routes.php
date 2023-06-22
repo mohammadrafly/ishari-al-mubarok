@@ -38,7 +38,7 @@ $routes->post('pesanan/bayar', 'Home::bayar');
 
 $routes->post('payment/checkout', 'Home::checkout');
 $routes->post('payment/callback', 'Home::callback');
-$routes->get('payment/finish?status_code=200&transaction_status=settlement&merchant_id=G022204148&order_id=(:any)', 'Home::finish/$1');
+$routes->get('payment/finish', 'Home::finish');
 
 //Auth
 $routes->match(['GET', 'POST'], 'signup', 'Auth::SignUp');

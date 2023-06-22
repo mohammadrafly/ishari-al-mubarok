@@ -1,5 +1,4 @@
 function updateOrder() {
-    var base_url = 'http://localhost:8080/';
     var id = $("#id").val();
     Swal.fire({
         title: 'Loading..',

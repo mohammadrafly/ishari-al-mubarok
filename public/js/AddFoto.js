@@ -1,7 +1,6 @@
 $(document).ready(function() {
     $("#form").submit( function (e) {
         e.preventDefault();
-            var base_url = 'http://localhost:8080/';
             var formData = new FormData(this);
             $.ajax({
                 url : base_url+'dashboard/list/galleries/add',

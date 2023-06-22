@@ -110,10 +110,15 @@ class Home extends BaseController
         }
     }    
 
-    public function finish($kode)
+    public function finish()
     {
         $model = new Orders();
-        $order = $model->where('kode_pembayaran', $kode)->first();
+        $model = new Orders();
+        //$statusCode = $this->request->getVar('status_code');
+        //$transactionStatus = $this->request->getVar('transaction_status');
+        //$merchantId = $this->request->getVar('merchant_id');
+        $orderId = $this->request->getVar('order_id');
+        $order = $model->where('kode_pembayaran', $orderId)->first();
         $id = $order['id'];
         if ($order) {
             $model->update($id, [
@@ -138,7 +143,7 @@ class Home extends BaseController
             'enabled_payments' => array('bca_klikpay'),
             'bca_klikpay' => array(
                 'description' => 'Payment using BCA KlikPay',
-                'finish_redirect_url' => 'http://localhost:8080/payment/finish/'.$kode_pembayaran
+                'finish_redirect_url' => base_url('payment/finish/'.$kode_pembayaran)
             ),
         );
 

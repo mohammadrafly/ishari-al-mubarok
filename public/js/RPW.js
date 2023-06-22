@@ -1,7 +1,6 @@
 $(document).ready(function() {
     $("#form").submit( function (e) {
         e.preventDefault();
-            var base_url = 'http://localhost:8080/';
             var token = $("#token").val();
             var username = $("#username").val();
             var password = $("#password").val();

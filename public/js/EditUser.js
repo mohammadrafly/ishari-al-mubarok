@@ -1,5 +1,4 @@
 function editUser(id) {
-    var base_url = 'http://localhost:8080/';
     $('#form')[0].reset(); 
     $.ajax({
         url : base_url + 'dashboard/list/users/update/' + id,

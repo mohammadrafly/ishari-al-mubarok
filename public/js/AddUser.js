@@ -1,5 +1,4 @@
 function saveUsers() {
-    var base_url = 'http://localhost:8080/';
     var url;
     var id = $("#id").val();
     if(id) {

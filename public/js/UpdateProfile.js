@@ -1,7 +1,6 @@
 $(document).ready(function() {
     $("#profile").submit( function (e) {
         e.preventDefault();
-            var base_url = 'http://localhost:8080/';
             var formData = new FormData(this);
             var email = $("#email").val();
             $.ajax({
