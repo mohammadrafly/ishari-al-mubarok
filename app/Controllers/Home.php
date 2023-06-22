@@ -46,26 +46,7 @@ class Home extends BaseController
             $time = $this->request->getVar('waktu_event');
             $latitude = $this->request->getPost('latitude');
             $longitude = $this->request->getPost('longitude');
-            $interval = 60; // Interval in minutes
-    
-            // Convert time to minutes for easier comparison
-            $selectedTime = intval(substr($time, 0, 2)) * 60 + intval(substr($time, 3, 2));
-    
-            // Check if there is an existing order within the interval
-            $existingOrders = $model->where('tanggal_event', $date)->findAll();
-            foreach ($existingOrders as $order) {
-                $orderTime = intval(substr($order['waktu_event'], 0, 2)) * 60 + intval(substr($order['waktu_event'], 3, 2));
-                if (abs($orderTime - $selectedTime) <= $interval) {
-                    $availableTime = date('H:i', strtotime($order['waktu_event']) + $interval * 60 + 60);
-                    return $this->response->setJSON([
-                        'status' => false,
-                        'icon' => 'error',
-                        'title' => 'Booking gagal!',
-                        'text' => 'Jam yang Anda pilih harus memiliki interval 30 menit dari order sebelumnya. Silakan pilih jam lain. Waktu yang tersedia: ' . $availableTime,
-                    ]);
-                }
-            }
-    
+
             $data = [
                 'kode_pembayaran' => $this->generateCode(10),
                 'tanggal_event' => $date,
