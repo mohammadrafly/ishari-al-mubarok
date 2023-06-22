@@ -35,6 +35,11 @@ $routes->get('profile/(:any)', 'Dashboard::profile/$1');
 $routes->get('pesanan/(:any)', 'Dashboard::clientPesanan/$1');
 $routes->get('avail/(:any)', 'Dashboard::checkAvailability/$1');
 $routes->post('pesanan/bayar', 'Home::bayar');
+
+$routes->post('payment/checkout', 'Home::checkout');
+$routes->post('payment/callback', 'Home::callback');
+$routes->get('payment/finish?status_code=200&transaction_status=settlement&merchant_id=G022204148&order_id=(:any)', 'Home::finish/$1');
+
 //Auth
 $routes->match(['GET', 'POST'], 'signup', 'Auth::SignUp');
 $routes->match(['GET', 'POST'], 'signin', 'Auth::SignIn');

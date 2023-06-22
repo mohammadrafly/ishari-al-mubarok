@@ -154,21 +154,17 @@
                   <?php endif ?>
                 </td>
                 <td>
-                  <?php if ($dd->foto_pembayaran === null): ?>
-                    <?php if ($dd->status === 'pending'): ?>
+                    <?php if ($dd->status == 'pending'): ?>
                       <button class="button-send scrollto" type="button" onclick="bayar(<?= $dd->id_order ?>)">
                         Bayar
                       </button>
-                    <?php endif; ?>
-                  <?php else: ?>
-                    <?php if ($dd->status === 'on_progres'): ?>
+                    <?php elseif ($dd->status == 'on_progres'): ?>
                       <a href="<?= 'https://wa.me/'.$admin['nomor_hp'].'?text=Halo min!,%20saya%20ingin%20menanyakan%20booking%20dengan%20KODE:%20'.$dd->kode_pembayaran ?>" class="btn btn-primary">Chat Admin</a>
-                    <?php elseif ($dd->status === 'ditolak'): ?>
+                    <?php elseif ($dd->status == 'ditolak'): ?>
                       <a href="<?= 'https://wa.me/'.$admin['nomor_hp'].'?text=Cek penolakan%20booking%20dengan%20KODE:%20'.$dd->kode_pembayaran ?>" class="btn btn-primary">Chat Admin</a>
-                    <?php elseif ($dd->status === 'done'): ?>
-                      Booking telah selesai
+                    <?php elseif ($dd->status == 'done'): ?>
+                      <a href="<?= 'https://wa.me/'.$admin['nomor_hp'].'?text=Halo min!,%20saya%20ingin%20menanyakan%20booking%20dengan%20KODE:%20'.$dd->kode_pembayaran ?>" class="btn btn-primary">Chat Admin</a>
                     <?php endif ?>
-                  <?php endif; ?>
                 </td>
               </tr>
 
@@ -177,31 +173,24 @@
                 <div class="modal-dialog" role="document">
                   <div class="modal-content">
                     <div class="modal-header">
-                      <h5 class="modal-title" id="myModalLabelUpload">Bayar Online</h5>
+                      <h5 class="modal-title" id="myModalLabelUpload">Pembayaran</h5>
                       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                       </button>
                     </div>
-                    <form id="form-upload" enctype="multipart/form-data">
+                    <form id="form-upload" method="post" action="<?= base_url('payment/checkout') ?>" target="_blank">
                       <div class="modal-body">
-                        <!-- Additional information -->
-                        <p>Silakan transfer jumlah pembayaran ke rekening bank berikut:</p>
-                        <p>Nama Bank: Bank Anda</p>
-                        <p>Nomor Rekening: 1234567890</p>
-                        
-                        <!-- Upload file form -->
-                        <input type="text" hidden id="id" name="id">
-                        <input type="text" hidden id="user_id" name="user_id" value="<?= session()->get('id') ?>">
                         <div class="form-group">
-                          <label for="fileInput">Bukti Pembayaran:</label>
-                          <input type="file" class="form-control-file" id="fileInput" name="fileInput">
+                          <label for="harga">Total Transaksi</label>
+                          <input type="text" class="form-control" id="harga" name="harga" readonly>
+                        </div>
+                        <div class="form-group">
+                          <label for="kode_pembayaran">Kode Pembayaran</label>
+                          <input type="text" class="form-control" id="kode_pembayaran" name="kode_pembayaran" readonly>
                         </div>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" onclick="doBayar()" class="btn btn-primary" id="kirimButton">
-                          <span id="buttonText">Kirim</span>
-                          <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none"></span>
-                        </button>
+                        <button type="submit" class="btn btn-primary">Bayar</button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                       </div>
                     </form>
@@ -224,6 +213,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="<?= base_url('js/SignOut.js') ?>"></script>
 <script src="<?= base_url('js/AddOrder.js') ?>"></script>
+<script src="https://app.midtrans.com/snap/snap.js" data-client-key="SB-Mid-client-v-GPH0_jniUnwwnI"></script>
 <script>
 const base_url = 'http://localhost:8080/';
 
@@ -335,7 +325,9 @@ function bayar(id) {
       success: function (respond) {
         console.log(respond.data);
   
-        $('[name="id"]').val(respond.data.id);
+        $('[name="kode_pembayaran"').val(respond.data.kode_pembayaran)
+        $('[name="harga"]').val(respond.data.harga)
+        $('[name="id"]').val(respond.data.id)
   
         $('#myModalUpload').modal('show');
         $('.modal-title').text('Edit');

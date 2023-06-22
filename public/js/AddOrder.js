@@ -1,11 +1,17 @@
 function Order() {
-    var username = $("#username").val();
+    var username = $("input[name='username']").val();
     var tanggal_event = $("#tanggal_event").val();
     var waktu_event = $("input[name='waktu_event']").val();
     var kategori_event = $("#kategori_event").val();
     var harga = $("#harga").val();
     var no_hp = $('#no_hp').val();
   
+    console.log(username)
+    console.log(tanggal_event)
+    console.log(waktu_event)
+    console.log(kategori_event)
+    console.log(harga)
+    console.log(no_hp)
     if (!username || !tanggal_event || !waktu_event || !kategori_event || !harga || !no_hp) {
       alert("Input tidak boleh kosong");
       return;

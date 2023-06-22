@@ -110,6 +110,104 @@ class Home extends BaseController
         }
     }    
 
+    public function finish($kode)
+    {
+        $model = new Orders();
+        $order = $model->where('kode_pembayaran', $kode)->first();
+        $id = $order['id'];
+        if ($order) {
+            $model->update($id, [
+                'status' => 'done'
+            ]);
+        }
+
+        return view('pages/successPage');
+    }
+
+    public function checkout()
+    {
+        $kode_pembayaran = $this->request->getVar('kode_pembayaran');
+        $total = $this->request->getVar('harga');
+        $transactionDetails = array(
+            'order_id' => $kode_pembayaran,
+            'gross_amount' => $total,
+        );
+
+        $params = array(
+            'transaction_details' => $transactionDetails,
+            'enabled_payments' => array('bca_klikpay'),
+            'bca_klikpay' => array(
+                'description' => 'Payment using BCA KlikPay',
+                'finish_redirect_url' => 'http://localhost:8080/payment/finish/'.$kode_pembayaran
+            ),
+        );
+
+        // Set your server key
+        \Midtrans\Config::$serverKey = 'SB-Mid-server-lx81NjzJDbq7sCUTPRgw8aHX';
+        \Midtrans\Config::$isProduction = false;
+
+        try {
+            // Get Snap payment page URL
+            $paymentUrl = \Midtrans\Snap::createTransaction($params)->redirect_url;
+
+            // Redirect the user to the payment page
+            return redirect()->to($paymentUrl);
+        } catch (\Exception $e) {
+            // Handle the error
+            return $this->response->setJSON(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function callback()
+    {
+        $model = new Orders();
+        // Set your server key
+        \Midtrans\Config::$serverKey = 'SB-Mid-server-lx81NjzJDbq7sCUTPRgw8aHX';
+        \Midtrans\Config::$isProduction = false;
+
+        // Get the raw POST data
+        $rawPostData = file_get_contents('php://input');
+
+        // Parse the raw POST data as JSON
+        $jsonData = json_decode($rawPostData);
+
+        // Check if the JSON data is valid
+        if ($jsonData === null) {
+            return $this->response->setJSON(['error' => 'Invalid JSON data']);
+        }
+
+        // Get the transaction status from the JSON data
+        $transactionStatus = $jsonData->transaction_status;
+
+        // Handle the transaction status accordingly
+        switch ($transactionStatus) {
+            case 'capture':
+                break;
+            case 'cancel':
+            case 'deny':
+                // Payment is canceled or denied, update your application's records accordingly
+                break;
+            case 'pending':
+                // Payment is pending, update your application's records accordingly
+                break;
+            case 'expire':
+                // Payment has expired, update your application's records accordingly
+                break;
+            case 'refund':
+                // Payment is refunded, update your application's records accordingly
+                break;
+            case 'partial_refund':
+                // Payment is partially refunded, update your application's records accordingly
+                break;
+            default:
+                // Invalid transaction status, handle the error accordingly
+                break;
+        }
+
+        // Return a response to Midtrans (HTTP 200 OK)
+        return $this->response->setStatusCode(200);
+    }
+
     public function bayar()
     {
         $id = $this->request->getVar('id');
