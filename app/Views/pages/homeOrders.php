@@ -249,7 +249,6 @@ function updateSelectedButtonColor() {
   });
 }
 
-
 function checkAvailability() {
   var tanggal = document.getElementById('tanggal_event').value;
   var xhr = new XMLHttpRequest();
@@ -260,7 +259,9 @@ function checkAvailability() {
       var availableWaktuEvent = response.map(function(item) {
         return item.waktu_event;
       });
+
       var waktuEventButtons = document.querySelectorAll('.waktu-event-btn');
+      var selectedWaktuEvent = document.getElementById('selected_waktu_event');
 
       waktuEventButtons.forEach(function(button) {
         var value = button.dataset.value;
@@ -276,19 +277,48 @@ function checkAvailability() {
         }
 
         button.addEventListener('click', function() {
-          var selectedWaktuEvent = document.getElementById('selected_waktu_event');
-          selectedWaktuEvent.value = button.dataset.value;
+          var selectedValue = button.dataset.value;
+          var isValid = checkInterval(selectedValue, availableWaktuEvent);
 
-          waktuEventButtons.forEach(function(btn) {
-            btn.classList.remove('selected');
-          });
-
-          button.classList.add('selected');
+          if (isValid) {
+            selectedWaktuEvent.value = selectedValue;
+            updateSelectedButtonColor();
+          } else {
+            alert('Mohon maaf, waktu pesanan harus memiliki interval waktu 2 jam dari pesanan yang ada.');
+          }
         });
       });
     }
   };
   xhr.send();
+}
+
+function checkInterval(selectedValue, availableWaktuEvent) {
+  if (availableWaktuEvent.length === 0) {
+    return true;
+  }
+
+  var selectedTime = getTimeValue(selectedValue);
+  var isIntervalValid = true;
+
+  availableWaktuEvent.forEach(function(time) {
+    var timeValue = getTimeValue(time);
+
+    if (Math.abs(selectedTime - timeValue) < 3) {
+      isIntervalValid = false;
+      return;
+    }
+  });
+
+  return isIntervalValid;
+}
+
+function getTimeValue(time) {
+  var timeParts = time.split(':');
+  var hours = parseInt(timeParts[0]);
+  var minutes = parseInt(timeParts[1]);
+
+  return hours + minutes / 60;
 }
 
 function alertPopUp() {
@@ -512,6 +542,13 @@ function handleMapClick(e) {
   marker = L.marker(e.latlng).addTo(map);
 
   var distance = calculateDistance(e.latlng.lat, e.latlng.lng, baseMap[0], baseMap[1]);
+  if (distance > 50) {
+    alert("Gagal, lokasi pesanan melebihi batas jarak 50 KM");
+    map.setView(baseMap, 10); // Mengarahkan peta kembali ke baseMap
+    map.removeLayer(marker); // Menghapus marker yang baru saja ditambahkan
+    setViewAndAddMarker(baseMap[0], baseMap[1]); 
+    return;
+  }
   var pricePerKilometer = 10000;
   var additionalPrice = distance * pricePerKilometer;
 
